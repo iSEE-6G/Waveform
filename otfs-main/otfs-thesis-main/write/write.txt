@@ -1,0 +1,161 @@
+
+-Εξομοιώσεις με OTFS
+
+--Εκπομπή pilot χωρίς Doppler
+Αρχικά οι κεραίες τοποθετήθηκαν σε απόσταση 1-1.5 μέτρο χωρίς κάποιο εμπόδιο όπως βλέπουμε στην εικόνα παρακάτω.
+
+--Εκπομπή pilot με Doppler
+Για αυτό το πείραμε χρησιμοποιήθηκε ένας ανεμιστήρας όπου τα φτερά του καλύφθηκαν με φύλλο αλουμινίου για να είναι επιτυχής η ανάκλαση των σημάτων με Delay-Doppler στον δέκτη. Ο ανεμιστήρας χρησιμοποιήθηκε για να προσομοιώσουμε την ανάκλαση των σημάτων με Delay-Doppler στον δέκτη.
+
+
+Στο κανάλι παρατηρούμε ότι το Doppler και το Delay στο πεδίο 0 έως 10 είναι υψηλότερο  και στα ακραία σημεία λαμβάνουμε μειωμένες τιμές.
+
+
+Ο λαμβανόμενος πιλότος με Doppler έχει αυξημένες τιμές στις περιοχές γύρω από αυτόν, καθώς με τη χρήση του ανεμιστήρα το σήμα στάλθηκε στον δέκτη με μεγαλύτερη ταχύτητα σε σύγκριση με το πρωηγούμενο πείραμα.
+--
+
+Ακόμα στάλθηκαν 4 σύμβολα 16-QAM για τον έλεγχο της μεταβολής τους χωρίς Doppler. Στην επόμενη ενότητα θα δοκιμάσουμε το ίδιο πείραμα αλλά με Doppler για να συγκρίνουμε τα αποτελέσματα.
+Παρακάτω βλέπουμε τα σύμβολα πριν σταλθούν.
+
+
+
+
+Εδώ βλέπουμε τα λαμβανόμενα σύμβολα χωρίς Doppler και παρατηρούμε ότι δεν υπάρχουν πολλές μεταβολές.
+
+--
+
+Σε αυτήν την ενότητα θα χρησιμοποιήσουμε τον ανεμιστήρα με τα φύλλα αλουμινίου, παρακάτω βλέπουμε το λαμβανόμενο block. 
+------------------------------------------------------------------
+
+
+OTFS
+Orthogonal Time Frequency Space 
+
+SDR
+Software Defined Radios 
+
+OFDM 
+Orthogonal frequency-division multiplexing
+
+BER 
+Bit Error Rate
+
+TDMA 
+Time-division multiple access
+
+CDMA 
+Code-division multiple access
+
+TF
+Time-Frequency
+
+DD
+delay-Doppler
+
+FT
+Fourier Transform
+
+CIR
+Channel Impulse Response
+
+CTF
+channel transfer function
+
+LTI
+Linear Time-Invariant
+
+LTV
+linear time-variant
+
+FD
+Frequency Domain
+
+CP
+Cyclic Prefix
+
+DoF
+Degrees of Freedom
+
+SFFT
+Symplectic Finite Fourier Transform
+
+ITU
+International Telecommunication Union
+
+eMBB
+Enhanced Mobile Broadband
+
+uRLLC
+Ultra-Reliable Low Latency Communications
+
+MIMO
+Multiple-Input Multiple-Output
+
+NOMA
+Non-Orthogonal Multiple Access
+
+SE
+Spectral Efficiency
+
+EE
+Energy Efficiency
+
+BS
+Base Station
+
+RF
+Radio Frequency
+
+OMA
+Orthogonal Multiple Access
+
+CD-NOMA
+Code Domain Non-Orthogonal Multiple Access
+
+PD-NOMA
+Power Domain Non-Orthogonal Multiple Access
+
+SIC
+Successive Interference Cancellation
+
+IM
+Index Modulation
+
+B5G
+Beyond 5G
+
+SM
+Spatial Modulation
+
+GSM
+Generalized Spatial Modulation
+
+SSK
+Space shift keying
+
+OFDM-IM
+OFDM sub-carrier Index Modulation
+
+MBM
+Media-based Modulation
+
+MIM
+Multidimensional IM
+
+ST-IM
+Space-time IM 
+
+SM-MBM
+Spatial modulated media-based modulation
+
+GSM-MBM
+Generalized spatial modulated media-based modulation
+
+ML
+maximum-likelihood
+
+BPSK
+Binary Phase Shift Keying
+
+MBM 
+Media-based Modulation

@@ -1,0 +1,16 @@
+function s_new = apply_doppler(time_vector, direct_freq_doppler, fd_iT, fd_iR, s)
+
+num_ru = size(fd_iT, 2);
+num_ue = size(fd_iR, 2);
+
+
+for ii = 1 : num_ru
+    for ll = 1 : num_ue
+        % TO DIRECT:
+        s_new = squeeze(s(1, ii, ll)) * exp(2j*pi*direct_freq_doppler(ii,ll)*time_vector);
+
+        % TA SCATTERERS:
+        s_new_all = squeeze(s(2:end, ii, ll)) .* exp(2j*pi*fd_iT*time_vector) .* exp(2j*pi*fd_iR*time_vector);
+        keyboard
+    end
+end

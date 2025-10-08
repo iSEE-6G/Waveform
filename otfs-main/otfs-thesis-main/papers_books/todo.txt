@@ -1,0 +1,8 @@
+1. create 1-1 array channel with winner
+2. test the channel 
+
+
+HELP: (https://www.mathworks.com/help/comm/ug/simultaneous-simulation-of-multiple-fading-channels-with-winner-ii-channel-model.html
+https://www.mathworks.com/help/comm/ref/winner2.antennaarray.html#bvmmg6c-FPACS
+https://www.mathworks.com/help/comm/ug/winner-ii-channel.html
+)

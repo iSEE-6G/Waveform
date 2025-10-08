@@ -1,0 +1,40 @@
+-mmWave (Extremely high frequency)-> Το άφθονο φάσμα που είναι διαθέσιμο σε ζώνες συχνοτήτων κυμάτων χιλιοστών (mmWave) πάνω από 24 GHz μπορεί να προσφέρει εξαιρετική χωρητικότητα (bandwidth), εξαιρετικά υψηλή απόδοση και εξαιρετικά χαμηλή καθυστέρηση. Χρησιμοποιείται κυρίως για τη μεταφορά μεγάλου όγκου δεδομένων σε περιβάλλοντα όπου οι κανονικές ζώνες συχνοτήτων απόβονται από τις παρεμοβολές. 
+wavelengths between 10 millimeters (30 GHz) and 1 millimeter (300 GHz) 
+
+--Time-Invariant to Time-Variant Channels
+-convolution:
+
+-Time-Invariant: Any delay provider in input must be delayed at output
+(Responce don't change if happens different time)
+
+-Linear: Responces Stack and Rescale
+
+-Linear Time-Invariant (LTI) -> Slides Stacks Rescale
+
+-Coherence time-> is the time duration over which the channel impulse response is considered to be not varying
+
+--Linear Time-Variant(LTV)--
+Moreover, Linear Time-Variant(LTV) has gain research attention in high-mobility signal transmission. LTV channels rise the frequency shifts due to Doppler effects with the frequency-dispersive (creates a spectral-smeared version
+of the transmitted signal). The increase of time-domain fades grow the Doppler effect because frequency-dispersive channels are time-selective.
+
+
+Introduction
+-6G->mmWave->OFDM->4G->5G->2G->OFDM
+
+--LTV channels in TF and DD domains--
+Στο TF (Time Frequency) domain δεν μπορούμε να προβλέψουμε τη φάση και το bandwidth του σήματος και για τη σύνδεση θα πάρει περισσότερη ώρα μέχρι να εκτελεστούν τα πρωτόκολλα σύνδεσης.
+
+-Τι κάνει το OTFS;
+Διάμορφώνει κάθε σύμβολο πληροφορίας σε ένα set ορθωγώνιων συναρτήσεων που εκτείνουν το εύρος ζώνης και τη χρονική διάρκεια του data burst. Αλλά σε σύγκριση με το CDMA και το OFDM, το OTFS είναι σχεδιασμένο να καταπολεμίσει το χρονικά μεταβαλλόμενο κανάλι πολλαπλών διαδρομών. 
+
+-Το delay-doppler κανάλι
+Επειδή υπάρχει μικρός αριθμός από channel reflectors για Doppler effects, χρειάζονται λιγότεροι παράμετροι για τη πρόβλεψη του καναλιού στο doppler-delay domain από το time-frequency domain
+
+
+-A broadcast application is one that sends data from one sender to multiple receivers simultaneously. This type of application is commonly used for things like live video or audio broadcasts, where the same content is sent to a large number of recipients at the same time
+
+-bursty data refers to data traffic that is characterized by short periods of high activity followed by longer periods of inactivity.asc
+
+-Frequency acquisition refers to the process of determining the frequency of an incoming signal or waveform.
+
+-channel impulse response (CIR) is a characteristic of a communication channel that describes how the channel responds to an impulse or a pulse of energy. It is a mathematical function that relates the input signal to the output signal of the channel.

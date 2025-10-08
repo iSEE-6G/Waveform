@@ -1,0 +1,19 @@
+function [P_direct, P_multipath] = calculate_fsl_paths(lambda, d, d_from_origin, d_from_destination)
+
+num_scatterers = size(d_from_origin, 1);
+num_rus = size(d_from_origin, 2);
+num_ues = size(d_from_destination, 2);
+
+% Losses for the LoS path (if any):
+P_direct = (lambda ./ (4 * pi * d)) .^ 2;
+
+P_multipath = zeros(num_scatterers, num_rus, num_ues);
+% Losses for the other paths:`
+for ii = 1 : num_ues
+    for jj = 1 : num_rus
+        % P_multipath(:, jj, ii) = (lambda ./ (4 * pi * d_from_origin(:, jj) + d_from_destination(:, ii) )).^ 2;
+        P_multipath(:, jj, ii) = (lambda ./ (4 * pi * d_from_origin(:, jj).*d_from_destination(:, ii) )).^ 2;
+    end
+end
+P_all = zeros(num_scatterers, num_rus, num_ues); 
+keyboard

@@ -1,0 +1,312 @@
+%% Initializations:
+freq = 28e9;
+slot = 0.125e-3;
+num_scatterers = 200;
+num_subcarriers = 3360;
+num_slots = 240;
+BW = 120e3 * num_subcarriers;
+num_elements_tx = 1;
+num_elements_rx = 4;
+
+% To mikos kymatos 
+c = 3 * (10^8);
+lambda = c/freq;
+
+% Location of Rx - Tx is assumed at (0,0)
+while 1
+  x = 10 + rand(1,1) * 100;
+  y = 10 + rand(1,1) * 100;
+  d = sqrt(x^2 + y^2);
+  if (d <= 200)
+      break;
+  end
+end
+
+% Scatterer locations and distance from origin (Tx):
+
+x_scat = zeros(num_scatterers,1);
+y_scat = zeros(num_scatterers,1);
+d_from_origin = zeros(num_scatterers,1);
+
+for kk = 1:num_scatterers
+    while 1
+        x_scat(kk) = 1 + rand(1,1) * (d-1)-1;
+        y_scat(kk) = 1 + rand(1,1) * (d-1)-1;
+        d_from_origin(kk) = sqrt(x_scat(kk)^2 + y_scat(kk)^2);
+        if (d_from_origin(kk) < d)
+            break;
+        end
+    end
+end
+
+% Distance from Rx:
+d_from_destination = zeros(num_scatterers,1);
+for kk = 1 : num_scatterers
+    d_from_destination(kk) = sqrt((abs(x_scat(kk)-x)^2 + abs(y_scat(kk)-y)^2));
+end
+
+% Losses for the LoS:
+P = (lambda / (4 * pi * d)) ^ 2;
+
+% Losses for the other paths:
+P_all = (lambda ./ (4 * pi * (d_from_origin + d_from_destination) )).^ 2;
+
+% Phase due to distance for LoS:
+fash = 2*pi/lambda*d; 
+
+% Phase due to distance for multipath:
+fash_all = 2*pi/lambda*(d_from_origin+d_from_destination); % bazeis ti synoliki apostasi poy dianythike.
+
+% From path power to complex gain:
+% First take the square root for gain:
+a = sqrt(P); %LoS:
+% Multipath:
+a_all = sqrt(P_all);
+
+% Then add the phase shift due to distance:
+s = a * exp(1j*fash); %LoS
+s_all = a_all .* exp(1j*fash_all); %multipath
+
+% Create the random phase shift:
+fi = 0 + (2 * pi) * rand(num_scatterers, 1);
+
+% Then add the random phase shift:
+s_all = s_all .* exp(1j*fi); 
+
+%% Doppler and movement:
+%velocity for Tx and Rx (max 50 m/s)
+u_T = 1 + rand(1,1) * 49; % // taxythta pompou
+u_R = 1 + rand(1,1) * 49; % // taxythta dekth
+
+% Direction of movement:
+f_T = 0 + (2 * pi) * rand(1,1); % // 
+f_R = 0 + (2 * pi) * rand(1,1); % // 
+% Relative direction of Rx-Tx movement
+f_relative_TR = f_R - f_T;
+
+u_Tx = u_T * cos(f_T); % // taxythtes se kathe axona
+u_Ty = u_T * sin(f_T);
+u_Rx = u_R * cos(f_R);
+u_Ry = u_R * sin(f_R);
+
+relative_velocity_x = u_Rx - u_Tx;
+relative_velocity_y = u_Ry - u_Ty;
+relative_velocity = sqrt((relative_velocity_x ^ 2) + (relative_velocity_y ^ 2)); % // sxetikh taxythta
+
+%% H dieuthinsi tis sxetikhs taxutitas einai: f_relative_TR opote:
+direct_freq_doppler = (relative_velocity / lambda) * cos(f_relative_TR);
+
+% Movement of the scatterers:
+u_scatterers = 1 + rand(num_scatterers,1) * 49;
+f_scat = 2*pi*rand(num_scatterers,1);
+% TWRA BRISKW TIS SXETIKES GWNIES KINISIS APO POMPO SE SKEDASTI:
+f_relative_Tscat = f_scat - f_T;
+% TWRA BRISKW TIS SXETIKES GWNIES KINISIS APO SKEDASTI SE POMPO:
+f_relative_scatR = f_R - f_scat;
+
+u_scatterers_x = u_scatterers(kk).*cos(f_scat);
+u_scatterers_y = u_scatterers(kk).*sin(f_scat);
+relative_scatterers_Tx = u_scatterers_x - u_Tx; % // sxetikh taxythta apo pompo se skedasth
+relative_scatterers_Ty = u_scatterers_y - u_Ty;
+relative_scatterers_Rx = u_Rx - u_scatterers_x; % // sxetikh taxythta apo skedasth se dekth
+relative_scatterers_Ry = u_Ry - u_scatterers_y;
+
+relative_velocity_scatterers_tx = sqrt((relative_scatterers_Tx.^ 2) + (relative_scatterers_Ty.^ 2)); 
+relative_velocity_scatterers_rx = sqrt((relative_scatterers_Rx.^ 2) + (relative_scatterers_Ry.^ 2));
+
+% KAI ANTISTOIXA DYO DOPPLER SHIFTS!: PROSOXI BAZOYME THN SXETIKI GWNIA (STO ALLAKSA):
+fd_iT = (relative_velocity_scatterers_tx / lambda).* cos(f_relative_Tscat);
+fd_iR = (relative_velocity_scatterers_rx / lambda).* cos(f_relative_scatR);
+
+%% OFDM Parameters
+FFT = 4096; 
+cplen = 208;
+Ts = num_subcarriers * 1 / BW; 
+Tcp = 208 * 1 / BW; 
+OFDM_symbol_time = Ts + Tcp; 
+Tb = slot * num_slots;
+num_of_sensing_signals = 2 * 240;
+num_ofdm_symbols_per_slot = 14;
+mod_rank = 16; % {4, 16, 32, 64, ...}
+bit_per_symbol = log2(mod_rank);
+num_ofdm_symbols = 10;
+total_ofdm_symbols = num_ofdm_symbols_per_slot * num_slots;
+
+% pilot positions:
+pilot_steps = 7;
+pilot_positions_subcarriers = 0:pilot_steps:num_subcarriers-1;
+pilot_positions_time = [2, 9];
+total_pilots = length(pilot_positions_time)*length(pilot_positions_subcarriers);
+
+bits_total = num_subcarriers * bit_per_symbol * total_ofdm_symbols;
+data = randi([0, 1], 1, bits_total);
+
+% create the table for OFDM symbols
+symbol_matrix = zeros(num_subcarriers, num_ofdm_symbols_per_slot);
+% create QPSK symbols for the pilots
+for slot = pilot_positions_time
+    symbol_matrix(pilot_positions_subcarriers+1, slot+1) = qammod(randi([0, 3], length(pilot_positions_subcarriers), 1), 4, 'InputType', 'integer');
+end
+
+symbol_matrix = repmat(symbol_matrix, 1, num_slots).';
+
+% 
+
+% Time Axis:
+timestep = 1/BW*(FFT+cplen); % equal to the time length of an ofdm symbol
+time_vector=0:timestep:10e-5; % ORIZW ENA DIANYSMA XRONOY GIA POLY MIKRO DIASTIMA PX 10 EIS TIN MEION 6H SECOND 'H 10MICRO SEC
+
+% TO DIRECT:
+s = s * exp(2j*pi*f_relative_TR*time_vector);
+
+% TA SCATTERERS:
+s_all = s_all .* exp(2j*pi*f_relative_Tscat*time_vector) .* exp(2j*pi*f_relative_scatR*time_vector);
+
+% Delays:
+delay_axis = 0: 1/BW: 10/BW;
+delay_los = d / c;
+delay = (d_from_destination + d_from_origin)/ c;
+max_delay_length = max([delay_los; delay]);
+delay1 = delay-delay_los;
+delay_bin_size = 1/BW; 
+num_delay_bins = ceil(max(delay) / delay_bin_size);
+delay_axis = 0: delay_bin_size: (num_delay_bins-1)/BW;
+
+gwnia_T = atan2(u_Ty, u_Tx);
+gwnia_R = atan2(u_Ry, u_R);
+gwnia_scat = atan2(y_scat, x_scat);
+
+d_antenna_tx = (0:num_elements_tx-1)*lambda/2;
+
+% range resolution, max range, velocity resolution, max velocity
+range_resolution = c / (2 * BW); 
+max_range = (c * FFT) / (2 * 120e3 * num_subcarriers); 
+velocity_resolution = c / (2 * freq * Tb); 
+max_velocity = (c * 120e3 * total_ofdm_symbols) / (2 * freq * 14); 
+
+steervec_los_tx = exp(-1j * (2 * pi * d_antenna_tx / lambda) * cos(gwnia_R));
+steervec_scat_tx = zeros(num_scatterers, num_elements_tx);
+for ii = 1 : num_scatterers
+    steervec_scat_tx(ii,:) = exp(-1j * (2 * pi * d_antenna_tx / lambda) * cos(gwnia_scat(ii)));
+end
+steervec_tx = [steervec_los_tx; steervec_scat_tx];
+
+d_antenna_rx = (0:num_elements_rx-1)*lambda/2;
+steervec_los_rx = exp(-1j * (2 * pi * d_antenna_rx / lambda) * cos(2*pi - gwnia_R));
+steervec_scat_rx = zeros(num_scatterers, num_elements_rx);
+for ii = 1 : num_scatterers
+    steervec_scat_rx(ii,:) = exp(1j * (2 * pi * d_antenna_rx / lambda) * cos(gwnia_scat(ii)- gwnia_R));
+end
+steervec_rx = [steervec_los_rx; steervec_scat_rx];
+
+% Initialize H with the additional dimension for delay bins
+H = zeros(num_elements_rx, num_elements_tx, 11, num_delay_bins);
+
+steervec_rx_H = steervec_rx';
+delay = [delay_los; delay];
+
+% Compute the channel matrix H for each time step and delay bin
+for tt = 1:size(time_vector,2)
+    s_all_t = s_all(:, tt);
+    s_combined = [s(tt); s_all_t]; % LoS gain and scatterers gain
+    
+    low = 0;
+    high = delay_bin_size;
+    for delaybin = 1:num_delay_bins
+        ind = (delay>=low) & (delay<high);
+        if sum(ind)>0
+            Sigma = diag(s_combined(ind));
+            H(:, :, tt, delaybin) = steervec_rx_H(:,ind) * Sigma * steervec_tx(ind,:);
+        end
+        low = high;
+        high = high + delay_bin_size;
+    end
+end
+
+disp(H);
+
+%% Transmitter
+keyboard
+qam = reshape(data, bit_per_symbol, bits_total/bit_per_symbol);
+mean_qam = mean(abs(qammod(0:mod_rank-1, mod_rank)).^2);
+qam = qammod(qam, mod_rank, 'InputType', 'bit');
+
+serial_parallel = reshape(qam, num_subcarriers, []).';
+serial_parallel(symbol_matrix~=0) = sqrt(2)*symbol_matrix(symbol_matrix~=0);
+serial_parallel = serial_parallel/sqrt(mean_qam);
+
+serial_parallel = [zeros(size(serial_parallel,1), (FFT-num_subcarriers)/2), serial_parallel, zeros(size(serial_parallel,1), (FFT-num_subcarriers)/2)]; % Add zero padding
+signal = FFT/sqrt(num_subcarriers)*ifft(serial_parallel, FFT, 2);
+
+add_cp = [signal(:, end-cplen+1:end) signal];
+add_cp = add_cp.';
+
+parallel_serial = add_cp(:);
+x_tx = repmat(parallel_serial, 1, size(H,2));
+
+%% CHANNEL:
+% H (Rx antennas, Tx antennas, time, delay) 
+
+sum_y_rx = zeros(length(parallel_serial)+ num_delay_bins-1, num_elements_rx);
+Hh = zeros(FFT, num_elements_rx, num_elements_tx);
+sum_Hh = zeros(FFT, num_elements_rx);
+
+% for tt = 1:length(time_vector)
+tt = 1;
+    for tx_ant = 1 : size(H,2)
+        for rx_ant = 1 : size(H,1)
+            h = squeeze(H(rx_ant,tx_ant,tt,:));
+            Hh(:, rx_ant, tx_ant) = fft(h, FFT); 
+            y_rx = conv(h, x_tx(:, tx_ant));
+            sum_y_rx(:, rx_ant) = sum_y_rx(:, rx_ant) + y_rx;
+            sum_Hh(:, rx_ant) = sum_Hh(:, rx_ant) + Hh(:, rx_ant, tx_ant);
+        end
+    end
+    display(tt)
+% end
+% SUM the results y_rx1 y_rx2... y_rx4 (for rx ant 1) ... rx 
+
+% sum_y_rx = sum(sum_y_rx,2);
+% sum_Hh = sum(sum_Hh, 2);
+% Exeis tesseris eksodo apo ton pompo -- analoga me tis keraies
+
+%% Add noise
+signal_power = mean(mean(abs(sum_y_rx(:,1)).^2));
+
+SNRdB = 160;
+SNR = 10^(SNRdB/10);
+noise_power = signal_power / SNR;
+noise = sqrt(noise_power/2) * (randn(size(sum_y_rx)) + 1i * randn(size(sum_y_rx)));
+
+rx_signal = sum_y_rx + noise;
+num_ofdm_symbols = size(serial_parallel,1);
+
+%% Receiver
+reverse_parallel= zeros(FFT+cplen, size(serial_parallel,1), num_elements_rx);
+for rx_ant = 1:num_elements_rx
+    tmp = reshape(rx_signal(1:end-num_delay_bins+1, rx_ant), FFT+cplen, []);
+    reverse_parallel(:,:,rx_ant) = tmp;
+end
+remove_cp = reverse_parallel(cplen + 1:end, :, :);
+
+received_signal= zeros(FFT, size(serial_parallel,1), num_elements_rx);
+for rx_ant = 1:num_elements_rx
+    received_signal(:,:,rx_ant) = sqrt(num_subcarriers)/FFT*fft(squeeze(remove_cp(:,:,rx_ant)), FFT, 1);
+end
+
+%% HERE EQUALIZATION!!
+
+x = zeros(size(received_signal));
+for rx_ant = 1:num_elements_rx
+    for sym = 1 : num_ofdm_symbols
+        x(:, sym, rx_ant) = received_signal(:, sym , rx_ant) ./ sum_Hh(:, rx_ant);
+    end
+end
+%% 
+
+for rx_ant = 1 : num_elements_rx
+    remove_first_subcarriers = squeeze(x((FFT-num_subcarriers)/2+1:end - (FFT-num_subcarriers)/2,:,rx_ant));
+    qam_demodulation = qamdemod(sqrt(mean_qam)*remove_first_subcarriers(:), mod_rank, 'OutputType', 'bit');
+    received_bits = reshape(qam_demodulation, 1, []);
+    error_rate = biterr(data, received_bits) / length(data);
+end

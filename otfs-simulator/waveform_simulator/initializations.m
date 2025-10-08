@@ -1,0 +1,57 @@
+%% System Initializations:
+freq = 27e9;
+c = 3 * (10^8);
+% Wavelength:
+lambda = c/freq;
+
+% Number of UEs:
+num_ue = 5;
+% Number of RUs-gNBs:
+num_ru = 2;
+
+%% Channel Initializations:
+num_scatterers = 10;
+% Distance threshold between Tx's and Rx's
+distance_thres = 200;
+% How many subpaths per scatterer cluster:
+subpaths_per_cluster = 10;
+
+%% OFDM Initializations:
+Delta_f = 120e3;                 % Subcarrier Spacing
+NFFT = 4096;                     % OFDM FFT size
+num_subcarriers = 3360;          % Usable subcarriers - must be less than NFFT - DC subcarrier used normaly
+cplen = 240;                     % Defined as number of samples
+num_ofdm_symbols_per_slot = 14;
+num_slots = 240;
+
+ofdm_params = struct('NFFT', NFFT, 'num_slots', num_slots...
+    , 'num_ofdm_symbols_per_slot', num_ofdm_symbols_per_slot, 'num_subcarriers', num_subcarriers, 'cplen', cplen);
+
+%% Parameter calculation:
+BW = Delta_f * num_subcarriers;     % Bandwidth.
+Ts = num_subcarriers * 1 / BW;      % Duration of net OFDM symbol
+Tcp = cplen * 1 / BW;               % Duration of cp 
+OFDM_symbol_time = Ts + Tcp; 
+
+slot_dur = num_ofdm_symbols_per_slot*OFDM_symbol_time;  % Duration of slot
+Tb = slot_dur * num_slots;          % Duration of frame (number of slots varible)
+
+bounds = 100;
+bounds_ru = 50;
+
+% velocity for Tx and Rx (max 50 m/s)
+u_MaxTR = 0;
+% velocity for scatterers
+u_Max = 70;
+
+% Array parameters: (assume ula for now):
+num_elements_tx = 4;
+num_elements_rx = 4;
+
+
+% num_of_sensing_signals = 2 * 240;
+% total_ofdm_symbols = num_ofdm_symbols_per_slot * num_slots;
+% 
+% 
+% 
+% slot_dur = 0.125e-3;

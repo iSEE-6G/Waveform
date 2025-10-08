@@ -1,0 +1,58 @@
+function create_ula_array(lambda, num_elements_tx, num_elements_rx, x_ru, y_ru, x_ue, y_ue, x_scat, y_scat)
+
+num_ru = size(x_ru, 1);
+num_ue = size(x_ue, 1);
+num_scatterers = size(x_scat, 1);
+d_antenna_tx = (0:num_elements_tx-1)*lambda/2;
+
+%% Tx to scatterers:
+steervec_scat_tx = zeros(num_ru, num_scatterers, num_elements_tx);
+for ll = 1 : num_ru
+    gwnia_scat = atan2(y_scat - y_ru(ll), x_scat - x_ru(ll));
+    for ii = 1 : num_scatterers
+        steervec_scat_tx(ll, ii,:) = exp(-1j * (2 * pi * d_antenna_tx / lambda) * cos(gwnia_scat(ii)));
+    end
+end
+%% LoS Path
+for ll = 1 : num_ru
+    x = x_ue - x_ru(ll);
+    y = y_ue - y_ru(ll);
+
+    gwnia_T = atan2(y, x);
+
+end
+
+
+
+
+
+
+
+    steervec_scat_tx = zeros(num_scatterers, num_elements_tx);
+    
+    
+    steervec_los_rx = exp(-1j * (2 * pi * d_antenna_rx / lambda) * cos(gwnia_R));
+
+
+
+d_antenna_rx = (0:num_elements_rx-1)*lambda/2;
+steervec_scat_rx = zeros(num_ue, num_scatterers, num_elements_tx);
+for ll = 1 : num_ue
+    x = x_ue - x_ru(ll);
+    y = y_ue - y_ru(ll);
+
+    gwnia_T = atan2(y, x);
+    gwnia_R = pi + gwnia_T;
+
+    gwnia_scat_R = atan2(y_scat-y, x_scat-x);
+
+    steervec_scat_rx = zeros(num_scatterers, num_elements_rx);
+    for ii = 1 : num_scatterers
+        steervec_scat_rx(ll, ii,:) = exp(1j * (2 * pi * d_antenna_rx / lambda) * cos(gwnia_scat_R(ii)- gwnia_R));
+    end
+    steervec_rx(ll,:,:) = [steervec_los_rx; steervec_scat_rx];
+end
+
+
+
+

@@ -1,0 +1,8 @@
+Hadani and A. Monk, “OTFS: A New Generation of Modulation Addressing the Challenges of 5G,” arXiv preprint arXiv:1802.02623, 2018.
+
+1. OTFS – A NEXT GENERATION MODULATION
+-Paragraph 1
+Τα 3G δίκτυα χρησιμοποιούσαν code division multiplexing (CDMA), μετά τα 4G δίκτυα που βασίζονται στο orthogonal frequency division multiplexing (OFDM). Με τη πάροδο του χρόνου παρατηρούμε ότι από τα παλιού τύπου CDMA οδηγηθήκαμε στο OFDM που έχει μεγαλύτερο φάσμα.
+
+-Paragraph 2
+Τα 5G δίκτυα χρειάζεται να μπορούν να υποστηρίξουν πολλαπλούς χρήστες (multi-user MIMO), άρα θα είναι απαραίτητο το μεγάλο φάσμα. Αυτό δεν μπορεί να υποστηριχτει με OFDM διαμόρφωση, διότι μεταδίδεται στον χρόνο και τη συχνότητα. Ακόμα μία έλλειψη του OFDM έιναι η αδυναμία μετάδοσης σε μη τετριμμένες συνθήκες δυναμικού καναλιού όπου οι στενές ζώνες του είναι υποβέλτιστες. 

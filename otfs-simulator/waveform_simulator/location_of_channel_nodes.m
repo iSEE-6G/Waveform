@@ -1,0 +1,64 @@
+function  [x_ru, y_ru, x, y, d, d_from_origin, d_from_destination] = location_of_channel_nodes(bounds_ru, bounds, num_ues, num_rus, num_scatterers, distance_thres)
+
+d_scatmin = 2; % minimum distance between discrete clusters:
+
+% Location of one RU is assumed at (0,0)
+x_ru = rand(num_rus-1, 1) * bounds_ru - bounds_ru/2;
+y_ru = rand(num_rus-1, 1) * bounds_ru - bounds_ru/2;
+x_ru = [0; x_ru]; y_ru = [0; y_ru];
+
+x = zeros(num_ues,1);
+y = zeros(num_ues,1);
+d = zeros(num_rus, num_ues);
+for ii = 1: num_ues
+    while 1
+        x(ii) = rand(1,1) * bounds - bounds/2;
+        y(ii) = rand(1,1) * bounds - bounds/2;
+        d(:,ii) = sqrt((x(ii)-x_ru).^2 + (y(ii)-y_ru).^2);
+        if all(d(:,ii) <= distance_thres)
+            break;
+        end
+    end
+end
+
+% Scatterer locations, distance from origin (Tx) and distance from Rx:
+x_scat = zeros(num_scatterers,1);
+y_scat = zeros(num_scatterers,1);
+d_from_origin = zeros(num_scatterers, num_rus);
+d_from_destination = zeros(num_scatterers, num_ues);
+d_total = zeros([num_scatterers, num_rus, num_ues]);
+
+for kk = 1:num_scatterers
+    while 1
+        % Initialize scatterer locations:
+        x_scat(kk) = 1 + rand(1,1) * (max(max(d))-1) - max(max(d))/2;
+        y_scat(kk) = 1 + rand(1,1) * (max(max(d))-1) - max(max(d))/2;
+
+        d_from_origin(kk, :) = sqrt((x_scat(kk) - x_ru).^2 + (y_scat(kk) - y_ru).^2);
+        d_from_destination(kk, :) = sqrt((abs(x_scat(kk)-x).^2 + abs(y_scat(kk)-y).^2));
+
+        % ensure scatterers between Tx and Rx and that the distance between
+        % close scatterers is less than 2m.
+        if kk>1
+            d_tmp = sqrt((x_scat(kk) - x_scat(1:kk-1)).^2 + (y_scat(kk) - y_scat(1:kk-1)).^2);
+
+            if sum(d_tmp<d_scatmin)==0
+                for rr = 1 : num_rus
+                    for uu = 1 : num_ues
+                        d_total(kk, rr, uu) = d_from_origin(kk, rr) +   d_from_destination(kk, uu);
+                    end
+                end
+                break
+            end
+        else
+            break
+        end
+    end
+end
+
+% Simeia
+figure
+hold on
+scatter(x_ru, y_ru, '^r', 'MarkerFaceColor', 'r');
+scatter(x, y, 'og', 'MarkerFaceColor', 'g');
+scatter(x_scat, y_scat, '*k');
